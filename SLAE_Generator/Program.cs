@@ -56,6 +56,28 @@ namespace SLAE_Generator
                 }
             }
 
+
+            var maxIndex = 1;
+            var max = Math.Abs(m[maxIndex, 0]);
+            for (int i = maxIndex + 1; i < n; i++)
+            {
+                var curValue = Math.Abs(m[i, 0]);
+                if (curValue > max)
+                {
+                    maxIndex = i;
+                    max = curValue;
+                }
+            }
+
+            k = -m[0, 0] / m[maxIndex, 0];
+            m[0, 0] = 0;
+            for (int j = 1; j < n; j++)
+            {
+                m[0, j] += m[maxIndex, j] * k;
+            }
+            v[0] += v[maxIndex] * k;
+
+
             Console.WriteLine();
 
             var sb = new StringBuilder();
