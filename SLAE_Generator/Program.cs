@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace SLAE_Generator
 {
@@ -56,27 +58,37 @@ namespace SLAE_Generator
                 }
             }
 
-
-            var maxIndex = 1;
-            var max = Math.Abs(m[maxIndex, 0]);
-            for (int i = maxIndex + 1; i < n; i++)
+            for(int i = 0; i < n; i++)
             {
-                var curValue = Math.Abs(m[i, 0]);
-                if (curValue > max)
+                int maxIndex = -1;
+                double max = 0;
+                for (int i2 = 0; i2 < n; i2++)
                 {
-                    maxIndex = i;
-                    max = curValue;
+                    if (i == i2)
+                        continue;
+
+                    var curValue = Math.Abs(m[i2, i]);
+                    if (curValue > max)
+                    {
+                        maxIndex = i2;
+                        max = curValue;
+                    }
                 }
-            }
 
-            k = -m[0, 0] / m[maxIndex, 0];
-            m[0, 0] = 0;
-            for (int j = 1; j < n; j++)
-            {
-                m[0, j] += m[maxIndex, j] * k;
+                k = -m[i, i] / m[maxIndex, i];
+                for (int j = 0; j < n; j++)
+                {
+                    if (i == j)
+                    {
+                        m[i, j] = 0;
+                    }
+                    else
+                    {
+                        m[i, j] += m[maxIndex, j] * k;
+                    }
+                }
+                v[i] += v[maxIndex] * k;
             }
-            v[0] += v[maxIndex] * k;
-
 
             Console.WriteLine();
 
@@ -98,7 +110,7 @@ namespace SLAE_Generator
             Console.WriteLine($"Полное имя сохраненного файла: {filePath}");
             Console.WriteLine("P.S. Не закрывай меня: тебе еще корни сравнивать...");
             Console.WriteLine("Чтобы закрыть приложение, введите пароль 'C# is best'.");
-            var pwd = "";
+            string pwd;
             do
             {
                 Console.Write($"Пароль: ");
